@@ -46,7 +46,7 @@ EXPO_PUBLIC_API_URL=http://192.168.1.10:3001
 | Android Emulator | `http://10.0.2.2:3001` |
 | เว็บบนคอมพิวเตอร์ที่รัน API | `http://localhost:3001` |
 
-หลังแก้ `.env` ให้หยุดแล้วเปิด `npm start` ใหม่ อย่าใช้ `localhost` บนมือถือจริง เพราะหมายถึงตัวมือถือเอง หากยังเชื่อมต่อไม่ได้ ให้ตรวจว่า API เปิดอยู่และไฟร์วอลล์อนุญาตพอร์ต 3001 บนเครือข่ายส่วนตัว ไม่ต้องส่งไฟล์ `.env` ขึ้น Git
+หลังแก้ `.env` ให้หยุดแล้วเปิด `npm start` ใหม่ อย่าใช้ `localhost` บนมือถือจริง เพราะหมายถึงตัวมือถือเอง หากยังเชื่อมต่อไม่ได้ ให้ตรวจว่า API เปิดอยู่และไฟร์วอลล์อนุญาตพอร์ต 3001 บนเครือข่ายส่วนตัว
 
 ## ตรวจสอบโปรเจกต์
 
@@ -67,10 +67,8 @@ npm run build:web
 
 Expo SDK 57 · React Native · TypeScript · Expo Router · Node.js · SQLite · PokeAPI · OpenStreetMap / Leaflet
 
-## ผู้จัดทำและเครดิต
+## ผู้จัดทำ
 
 **ธนกร ภิรมย์กุล — 643450789-0**
 
 ต่อยอดจาก `my-app-profile`, `my-app-hybrid`, `PokedexTeamBuilder`, `Lab-Camera/camera-app` และ `Location-Maps/locationandmap`
-
-ทีม Pokédex ต้นฉบับ: ปภพ สุระทิพย์, ธนกร ภิรมย์กุล และกีรติ สุวรรณภูสิทธิ์
