@@ -1,0 +1,68 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# Local accounts, sessions, registrations and configuration
+server/.data/
+.env
+.env.*
+
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+/docs/
+
+# Local verification and submission exclusions
+/.verification/
+/AGENTS.md
+/CLAUDE.md
+/LICENSE
+*.zip
+
+# Unused starter screens and helpers
+/app/modal.tsx
+/app/(tabs)/two.tsx
+/components/EditScreenInfo.tsx
+/components/ExternalLink.tsx
+/components/StyledText.tsx
+/components/useClientOnlyValue.ts
+/components/useClientOnlyValue.web.ts
+/assets/fonts/SpaceMono-Regular.ttf

@@ -1,0 +1,26 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+test('map initializes, selects points only when editable, and reports tile errors', () => {
+  const exports = {};
+  vm.runInNewContext(ts.transpileModule(readFileSync('services/venue-map-html.ts', 'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText, {exports});
+  const script = [...exports.venueMapHtml.matchAll(/<script>([\s\S]*?)<\/script>/g)][0][1];
+  const messages = [], handlers = {}, tileHandlers = {};
+  let center, draggable;
+  const map = {on:(name, fn) => {handlers[name]=fn;}, wrapLatLng:p=>p, getZoom:()=>14, setView:p=>{center=p;marker.dragging={enable:()=>{draggable=true;},disable:()=>{draggable=false;}};}};
+  const marker = {addTo:()=>marker, setLatLng:()=>{}, dragging:undefined,on:()=>{}};
+  const tiles = {on:(name, fn)=>{tileHandlers[name]=fn;return tiles;},addTo:()=>tiles};
+  const window = {ReactNativeWebView:{postMessage:s=>messages.push(JSON.parse(s))}};
+  vm.runInNewContext(script, {window,L:{map:()=>map,marker:()=>marker,tileLayer:()=>tiles}});
+  assert.equal(messages[0].type,'ready');
+  window.updateVenue(7.89,98.36,false);
+  assert.equal(center[0],7.89); assert.equal(draggable,false);
+  handlers.click({latlng:{lat:8,lng:99}}); assert.equal(messages.length,1);
+  window.updateVenue(7.89,98.36,true);
+  handlers.click({latlng:{lat:8,lng:99}});
+  assert.deepEqual(messages.at(-1),{type:'point',latitude:8,longitude:99});
+  tileHandlers.tileerror(); assert.equal(messages.at(-1).type,'error');
+  tileHandlers.tileload(); assert.equal(messages.at(-1).type,'loaded');
+});
