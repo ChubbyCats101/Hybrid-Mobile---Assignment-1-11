@@ -5,7 +5,6 @@ import Constants from 'expo-constants';
 import { validId, type CampusEvent } from '../types/event';
 Notifications.setNotificationHandler({ handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false }) });
 const channelId = 'journey-reminders';
-const expoGoMessage = 'การแจ้งเตือนต้องใช้ Development Build ของ PokéJourney ไม่รองรับการตั้งแจ้งเตือน Android ใน Expo Go';
 export async function reminderId(eventId: string): Promise<string | null> {
   const id = await AsyncStorage.getItem(`@journey/reminder/${eventId}`);
   if (!id) return null;
@@ -16,21 +15,15 @@ export async function reminderId(eventId: string): Promise<string | null> {
 export async function scheduleReminder(event: CampusEvent, test = false) {
   const date = new Date(test ? Date.now() + 15000 : Date.parse(event.startsAt) - 30 * 60000);
   if (date.getTime() <= Date.now()) throw new Error('เวลาที่จะเตือนผ่านไปแล้ว');
-  if (Platform.OS === 'android' && Constants.appOwnership === 'expo') throw new Error(expoGoMessage);
-  if (Platform.OS === 'android') {
-    try {
-      await Notifications.setNotificationChannelAsync(channelId, { name: 'เตือนกิจกรรม PokéJourney', importance: Notifications.AndroidImportance.HIGH });
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('NotificationsChannelsProvider')) {
-        throw new Error(expoGoMessage);
-      }
-      throw error;
-    }
+  // Expo Go uses its default channel; its native channel provider may be absent.
+  const useCustomChannel = Platform.OS === 'android' && Constants.appOwnership !== 'expo';
+  if (useCustomChannel) {
+    await Notifications.setNotificationChannelAsync(channelId, { name: 'เตือนกิจกรรม PokéJourney', importance: Notifications.AndroidImportance.HIGH, sound: 'default' });
   }
   const permission = await Notifications.requestPermissionsAsync();
   if (!permission.granted) throw new Error('ไม่ได้รับสิทธิ์แจ้งเตือน กรุณาเปิดในการตั้งค่า');
   await cancelReminder(event.id);
-  const id = await Notifications.scheduleNotificationAsync({ content: { title: test ? 'ทดสอบการเตือน PokéJourney' : 'กิจกรรมจะเริ่มในอีก 30 นาที', body: event.title, data: { eventId: event.id } }, trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId } });
+  const id = await Notifications.scheduleNotificationAsync({ content: { title: test ? 'ทดสอบการเตือน PokéJourney' : 'กิจกรรมจะเริ่มในอีก 30 นาที', body: event.title, sound: 'default', data: { eventId: event.id } }, trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, ...(useCustomChannel ? { channelId } : {}) } });
   try { await AsyncStorage.setItem(`@journey/reminder/${event.id}`, id); }
   catch (e) { await Notifications.cancelScheduledNotificationAsync(id); throw e; }
   return id;
